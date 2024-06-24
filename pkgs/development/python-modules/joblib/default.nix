@@ -14,6 +14,9 @@
   lz4,
   psutil,
 
+  # lscpu required on linux
+  util-linuxMinimal,
+
   # tests
   pytestCheckHook,
   threadpoolctl,
@@ -39,6 +42,11 @@ buildPythonPackage rec {
     lz4
     psutil
   ];
+
+  postPatch = lib.optionalString stdenv.hostPlatform.isLinux ''
+    substituteInPlace joblib/externals/loky/backend/context.py \
+      --replace 'lscpu' '${util-linuxMinimal}/bin/lscpu'
+  '';
 
   nativeCheckInputs = [
     pytestCheckHook
